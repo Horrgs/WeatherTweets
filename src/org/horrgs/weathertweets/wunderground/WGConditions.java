@@ -3,7 +3,7 @@ package org.horrgs.weathertweets.wunderground;
 /**
  * Created by Horrgs on 3/9/2015.
  */
-public interface WGMainFrame {
+public interface WGConditions {
 
     public double getFTemp();
 
