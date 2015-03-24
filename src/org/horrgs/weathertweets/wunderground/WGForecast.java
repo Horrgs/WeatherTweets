@@ -26,9 +26,23 @@ public interface WGForecast {
      */
 
     //PRETTY??
-    public String getDate();
+    public String getAccuDate();
 
-    public String getHighFahrenheit();
+    public String getAccuHighFahrenheit();
 
-    public String getLowFahrenheit();
+    public String getAccuLowFahrenheit();
+
+    public String getAccuConditions();
+
+    public int getAccuPrecipPossibility();
+
+    public int getSnowAllDay();
+
+    public int getSnowNight();
+
+    public int getMaxWind();
+
+    public int getAvgWind();
+
+    public int getAvgHumidity();
 }
