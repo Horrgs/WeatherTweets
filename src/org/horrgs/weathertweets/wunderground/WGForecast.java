@@ -14,7 +14,7 @@ public interface WGForecast {
     public double getPrecipitationPossibility();
 
     /**
-     * Use 0 for morning - afternoon. Use 2 for evening. Use 3 for next morning - afternoon. Use 4 for next evening.
+     * Use 0 for morning - afternoon. Use 1 for evening. Use 2 for next morning - afternoon. Use 3 for next evening.
      * @return period of the weather you want.
      */
     //TODO: check the current time to determine whether or not to tweet about the morning, or we can use the next morning.
