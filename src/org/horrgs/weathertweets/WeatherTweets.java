@@ -12,6 +12,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,7 +39,35 @@ public class WeatherTweets implements Runnable {
 
     @Override
     public void run() {
-        WGLookup wgLookup = new WGLookup("NY", "Buffalo");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(calendar.getTime());
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int year = calendar.get(Calendar.YEAR);
+        int dayinyear = calendar.get(Calendar.DAY_OF_YEAR);
+        int min = calendar.get(Calendar.MINUTE);
+        boolean message = new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage().equals("Zero weather alerts.");
+        WGLookup.Protocol protocol = WGLookup.Protocol.CONDITION;
+        switch(min) {
+            case 0:
+                protocol = WGLookup.Protocol.CONDITION;
+                break;
+            case 20:
+                if(!message) {
+                    protocol = WGLookup.Protocol.ALERT;
+                }
+                break;
+            case 30:
+                if(message) {
+                    protocol = WGLookup.Protocol.FORECAST;
+                }
+                break;
+            case 40:
+                if(!message) {
+                    protocol = WGLookup.Protocol.FORECAST;
+                }
+
+        }
+        WGLookup wgLookup = new WGLookup(protocol, "NY", "Buffalo");
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = null;
         try {
@@ -56,11 +85,6 @@ public class WeatherTweets implements Runnable {
             .setOAuthAccessToken(jsonObject.get("OAuthAccessToken").toString())
             .setOAuthAccessTokenSecret(jsonObject.get("OAuthAccessTokenSecret").toString());
         TwitterFactory tf = new TwitterFactory(configurationBuilder.build());
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(calendar.getTime());
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        int year = calendar.get(Calendar.YEAR);
-        int dayinyear = calendar.get(Calendar.DAY_OF_YEAR);
         Twitter twitter = tf.getInstance();
         try {
             twitter.updateStatus("[" + hour + "/" + dayinyear + "/" + year + "]\n" +
