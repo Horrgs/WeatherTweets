@@ -99,5 +99,39 @@ public class WeatherTweets implements Runnable {
         } catch (TwitterException ex) {
             ex.printStackTrace();
         }
+
+        try {
+            String format = "[" + hour + "/" + dayinyear + "/" + year + "]\n";
+            switch(protocol) {
+                case CONDITION:
+                    twitter.updateStatus(format +
+                            "Temp: " + wgLookup.getFTemp() + "F\n" +
+                            "Feels Like: " + wgLookup.getFeelsLike() + "F\n" +
+                            "Humidity: " + wgLookup.getHumidity() + "\n" +
+                            "Forecast: " + wgLookup.getForecast() + "\n" +
+                            "Precip: " + wgLookup.getPrecipitation()  + " inches\n"  +
+                            "Wind: " + wgLookup.getWind() + "MPH\n" +
+                            "Wind Gusts: "  + wgLookup.getWindGusts() + "MPH");
+                    break;
+                case ALERT:
+                    //TODO: this will need to check for multiple alerts.
+                    break;
+                case FORECAST:
+                    if(wgLookup.shouldTweetSimplistic()) {
+                        twitter.updateStatus(format +
+                                "Outlook: " + wgLookup.getPrediction() + "\n" +
+                                "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
+                    } else {
+                        twitter.updateStatus(format +
+                                "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
+                                "Outlook: " + wgLookup.getAccuConditions() + "\n" +
+                                "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
+                                "Wind: " + wgLookup.getMaxWind()  + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
+                                "Humidity: " + wgLookup.getAvgHumidity() + "%");
+                    }
+            }
+        } catch (TwitterException ex) {
+
+        }
     }
 }
