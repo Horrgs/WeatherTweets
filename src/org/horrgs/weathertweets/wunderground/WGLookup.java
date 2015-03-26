@@ -68,32 +68,20 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
     }
 
     private  <T> T get(String jsonObjectKey, String value, String forecastObj) {
-        if(getProtocol() == Protocol.CONDITION) {
-            try {
+        try {
+            if(getProtocol() == Protocol.CONDITION) {
                 return (T) jsonObject.getJSONObject(jsonObjectKey).get(value);
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
-        } else if(getProtocol() == Protocol.ALERT) {
-            try {
+            } else if(getProtocol() == Protocol.ALERT) {
                 return (T) jsonObject.getJSONArray(jsonObjectKey).getJSONObject(0).get(value);
-            } catch (JSONException ex) {
-                ex.printStackTrace();
-            }
-        } else if(getProtocol() == Protocol.FORECAST) {
-            if(getForecastType() == ForecastType.TXTFORECAST) {
-                try {
+            } else if(getProtocol() == Protocol.FORECAST) {
+                if(getForecastType() == ForecastType.TXTFORECAST) {
                     return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").get(getPeriod());
-                } catch (JSONException ex) {
-                    ex.printStackTrace();
-                }
-            } else if(getForecastType() == ForecastType.SIMPLEFORECAST) {
-                try {
+                } else if(getForecastType() == ForecastType.SIMPLEFORECAST) {
                     return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj);
-                } catch (JSONException ex) {
-                    ex.printStackTrace();
                 }
             }
+        } catch (JSONException ex) {
+            ex.printStackTrace();
         }
         return null;
     }
