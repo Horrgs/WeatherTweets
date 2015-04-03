@@ -31,7 +31,8 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
                 this.alertsArray = jsonObject.getJSONArray("alerts");
                 if(alertsArray.length() == 0) {
                     setMessage("Zero weather alerts.");
-                    return;
+                } else {
+                    setMessage("Weather alerts available.");
                 }
             }
         } catch (IOException ex) {
