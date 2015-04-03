@@ -75,7 +75,7 @@ public class WeatherTweets implements Runnable {
                     protocol = WGLookup.Protocol.CONDITION;
                     wgLookup.setProtocol(protocol);
                     System.out.println("Protocol updated to " + protocol.getProtocolType());
-                    System.out.println("A weather" + protocol.getProtocolType() + "tweet is being sent.");
+                    System.out.println("A weather " + protocol.getProtocolType() + "tweet is being sent.");
                     twitter.updateStatus(format +
                             "Temp: " + wgLookup.getFTemp() + "F\n" +
                             "Feels Like: " + wgLookup.getFeelsLike() + "F\n" +
@@ -91,7 +91,7 @@ public class WeatherTweets implements Runnable {
                         wgLookup.setProtocol(protocol);
                         //TODO: this will need to check for multiple alerts.
                         System.out.println("Protocol updated to " + protocol.getProtocolType());
-                        System.out.println("A weather" + protocol.getProtocolType() + "tweet is being sent.");
+                        System.out.println("A weather " + protocol.getProtocolType() + "tweet is being sent.");
                         twitter.updateStatus("WEATHER ALERT\n" +
                                 "Description: " + wgLookup.getDescription() + "\n" +
                                 "Began At: " + wgLookup.dateSet() +  "\n" +
@@ -104,13 +104,13 @@ public class WeatherTweets implements Runnable {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
                         System.out.println("Protocol updated to " + protocol.getProtocolType());
-                        System.out.println("A weather" + protocol.getProtocolType() + "tweet is being sent.");
+                        System.out.println("A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
                             twitter.updateStatus(format +
                                     "Outlook: " + wgLookup.getPrediction() + "\n" +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
-                            System.out.println("A weather" + protocol.getProtocolType() + "tweet is being sent.");
+                            System.out.println("A weather " + protocol.getProtocolType() + " tweet is being sent.");
                             wgLookup.setProtocol(protocol);
                             twitter.updateStatus(format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
@@ -126,13 +126,12 @@ public class WeatherTweets implements Runnable {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
                         System.out.println("Protocol updated to " + protocol.getProtocolType());
-                        System.out.println("A weather" + protocol.getProtocolType() + "tweet is being sent.");
+                        System.out.println("A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
                             twitter.updateStatus(format +
                                     "Outlook: " + wgLookup.getPrediction() + "\n" +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
-                            System.out.println("Updating status..");
                             twitter.updateStatus(format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
                                     "Outlook: " + wgLookup.getAccuConditions() + "\n" +
