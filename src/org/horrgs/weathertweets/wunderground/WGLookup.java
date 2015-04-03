@@ -13,7 +13,7 @@ import java.util.Calendar;
  */
 public class WGLookup implements WGConditions, WGAlert, WGForecast {
     private String key = "";
-    private static String message;
+    private static String message = "##";
     private JSONObject jsonObject;
     private JSONArray alertsArray;
     private Protocol protocol;
@@ -25,15 +25,15 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         BufferedReader bufferedReader = null;
         try {
             bufferedReader = new BufferedReader(new FileReader("keys.txt"));
+            key = bufferedReader.readLine();
             this.jsonObject = new JSONObject(getResponse(wunderGroundAPI.openURL(getURL(getProtocol().getProtocolType(), state + "/" + city + ".json"))));
             if(getProtocol() == Protocol.ALERT) {
-                this.alertsArray = new JSONArray(jsonObject.getJSONArray("alerts"));
+                this.alertsArray = jsonObject.getJSONArray("alerts");
                 if(alertsArray.length() == 0) {
                     setMessage("Zero weather alerts.");
                     return;
                 }
             }
-            key = bufferedReader.readLine();
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (JSONException ex) {
@@ -49,6 +49,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         this.message = message;
     }
     private String getURL(String protocol, String dir) {
+    System.out.println(WunderGroundAPI.WEBSITE + key + "/" + protocol + "/q/" + dir);
         return WunderGroundAPI.WEBSITE + key + "/" + protocol + "/q/" + dir;
     }
 
@@ -244,7 +245,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         return protocol;
     }
 
-    protected void setProtocol(Protocol protocol) {
+    public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
     }
 
