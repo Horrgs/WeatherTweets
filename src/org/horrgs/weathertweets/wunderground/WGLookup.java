@@ -26,6 +26,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         try {
             bufferedReader = new BufferedReader(new FileReader("keys.txt"));
             key = bufferedReader.readLine();
+            //end reading
             this.jsonObject = new JSONObject(getResponse(wunderGroundAPI.openURL(getURL(getProtocol().getProtocolType(), state + "/" + city + ".json"))));
             if(getProtocol() == Protocol.ALERT) {
                 this.alertsArray = jsonObject.getJSONArray("alerts");
@@ -38,6 +39,22 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         } catch (IOException ex) {
             ex.printStackTrace();
         } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void recall(String state, String city) {
+        try {
+            this.jsonObject = new JSONObject(getResponse(new WunderGroundAPI().openURL(getURL(getProtocol().getProtocolType(), state + "/" + city + ".json"))));
+            if(getProtocol() == Protocol.ALERT) {
+                this.alertsArray = jsonObject.getJSONArray("alerts");
+                if(alertsArray.length() == 0) {
+                    setMessage("Zero weather alerts available.");
+                } else {
+                    setMessage(alertsArray.length() +  " weather alert(s) available.");
+                }
+            }
+        } catch(JSONException ex) {
             ex.printStackTrace();
         }
     }
@@ -162,7 +179,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
 
     @Override
     public String getPrediction() {
-        return get(keyForecast, "fctext", null);
+        return get(keyForecast, "fcttext", null);
     }
     @Override
     public double getPrecipitationPossibility() {
@@ -237,7 +254,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         calendar.setTime(calendar.getTime());
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         hour++;
-        return hour % 3 == 0 ? true : false;
+        return hour % 3 == 0;
     }
 
 
