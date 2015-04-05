@@ -94,9 +94,11 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
                 return (T) jsonObject.getJSONArray(jsonObjectKey).getJSONObject(0).get(value);
             } else if(getProtocol() == Protocol.FORECAST) {
                 if(getForecastType() == ForecastType.TXTFORECAST) {
-                    return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").get(getPeriod());
+                    System.out.println(jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(getPeriod()).get(value));
+                    return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(getPeriod()).get(value);
                 } else if(getForecastType() == ForecastType.SIMPLEFORECAST) {
-                    return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj);
+                    System.out.println(jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj).get(value));
+                    return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj).get(value);
                 }
             }
         } catch (JSONException ex) {
@@ -182,7 +184,7 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         return get(keyForecast, "fcttext", null);
     }
     @Override
-    public double getPrecipitationPossibility() {
+    public String getPrecipitationPossibility() {
         return get(keyForecast, "pop", null);
     }
 
@@ -267,11 +269,11 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
         this.protocol = protocol;
     }
 
-    protected ForecastType getForecastType() {
+    public ForecastType getForecastType() {
         return forecastType;
     }
 
-    protected void setForecastType(ForecastType forecastType) {
+    public void setForecastType(ForecastType forecastType) {
         this.forecastType = forecastType;
     }
 
