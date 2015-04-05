@@ -11,7 +11,7 @@ public interface WGForecast {
 
     public String getPrediction();
 
-    public double getPrecipitationPossibility();
+    public String getPrecipitationPossibility();
 
     /**
      * Use 0 for morning - afternoon. Use 1 for evening. Use 2 for next morning - afternoon. Use 3 for next evening.
