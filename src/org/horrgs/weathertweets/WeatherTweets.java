@@ -9,10 +9,11 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
-import java.util.Calendar;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.Map.Entry;
 
 /**
  * Created by Horrgs on 3/9/2015.
@@ -100,7 +101,7 @@ public class WeatherTweets implements Runnable {
 
                     }
                     break;
-                case 30:
+                case 40:
                     if (message) {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
@@ -108,36 +109,14 @@ public class WeatherTweets implements Runnable {
                         System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
                         System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
+                            wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
                             twitter.updateStatus(format +
+                                    "For: " + wgLookup.getDay() + "\n" +
                                     "Outlook: " + wgLookup.getPrediction() + "\n" +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
+                            wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
                             System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
-                            wgLookup.setProtocol(protocol);
-                            wgLookup.recall("NY", "Buffalo");
-                            twitter.updateStatus(format +
-                                    "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
-                                    "Outlook: " + wgLookup.getAccuConditions() + "\n" +
-                                    "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
-                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
-                                    "Humidity: " + wgLookup.getAvgHumidity() + "%");
-                        }
-                    }
-                    break;
-                case 40:
-                    if (!message) {
-                        protocol = WGLookup.Protocol.FORECAST;
-                        wgLookup.setProtocol(protocol);
-                        wgLookup.recall("NY", "Buffalo");
-                        System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
-                        System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
-                        if (wgLookup.shouldTweetSimplistic()) {
-                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
-                            twitter.updateStatus(format +
-                                    "Outlook: " + wgLookup.getPrediction() + "\n" +
-                                    "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
-                        } else {
-                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
                             twitter.updateStatus(format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
                                     "Outlook: " + wgLookup.getAccuConditions() + "\n" +
@@ -148,6 +127,31 @@ public class WeatherTweets implements Runnable {
                     }
                     break;
                 case 45:
+                    if (!message) {
+                        protocol = WGLookup.Protocol.FORECAST;
+                        wgLookup.setProtocol(protocol);
+                        wgLookup.recall("NY", "Buffalo");
+                        System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
+                        System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
+                        if (wgLookup.shouldTweetSimplistic()) {
+                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
+                            wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
+                            twitter.updateStatus(format +
+                                    "Outlook: " + wgLookup.getPrediction() + "\n" +
+                                    "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
+                        } else {
+                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
+                            wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
+                            twitter.updateStatus(format +
+                                    "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
+                                    "Outlook: " + wgLookup.getAccuConditions() + "\n" +
+                                    "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
+                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
+                                    "Humidity: " + wgLookup.getAvgHumidity() + "%");
+                        }
+                    }
+                    break;
+                case 26:
                     if(message) {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
@@ -155,12 +159,14 @@ public class WeatherTweets implements Runnable {
                         System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
                         System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
-                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
+                            wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
+                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
                             twitter.updateStatus(format +
                                     "Outlook: " + wgLookup.getPrediction() + "\n" +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
-                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
+                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
+                            wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
                             twitter.updateStatus(format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
                                     "Outlook: " + wgLookup.getAccuConditions() + "\n" +
@@ -174,5 +180,25 @@ public class WeatherTweets implements Runnable {
         } catch(TwitterException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private String splitTweet(String status) {
+        if(status.length() < 140) {
+            return status;
+        } else {
+            HashMap<Integer, Character> periodMap = new HashMap<>();
+            for (int x = 140; x != 0; x--) {
+                if (status.charAt(x) == '.') {
+                    periodMap.put(x, status.charAt(x));
+                }
+            }
+            Entry<Integer, Character> maxPeriod = null;
+            for(Entry<Integer, Character> entry : periodMap.entrySet()) {
+                if(maxPeriod == null || entry.getValue() > maxPeriod.getValue()) {
+                    maxPeriod = entry;
+                }
+            }
+        }
+        return "Invalid tweet.";
     }
 }
