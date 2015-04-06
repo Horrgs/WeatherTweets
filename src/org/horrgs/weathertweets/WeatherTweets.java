@@ -151,31 +151,6 @@ public class WeatherTweets implements Runnable {
                         }
                     }
                     break;
-                case 26:
-                    if(message) {
-                        protocol = WGLookup.Protocol.FORECAST;
-                        wgLookup.setProtocol(protocol);
-                        wgLookup.recall("NY", "Buffalo");
-                        System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
-                        System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
-                        if (wgLookup.shouldTweetSimplistic()) {
-                            wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
-                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
-                            twitter.updateStatus(format +
-                                    "Outlook: " + wgLookup.getPrediction() + "\n" +
-                                    "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
-                        } else {
-                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
-                            wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
-                            twitter.updateStatus(format +
-                                    "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
-                                    "Outlook: " + wgLookup.getAccuConditions() + "\n" +
-                                    "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
-                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
-                                    "Humidity: " + wgLookup.getAvgHumidity() + "%");
-                        }
-                    }
-                    break;
             }
         } catch(TwitterException ex) {
             ex.printStackTrace();
