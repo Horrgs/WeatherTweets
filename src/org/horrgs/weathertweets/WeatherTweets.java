@@ -157,9 +157,11 @@ public class WeatherTweets implements Runnable {
         }
     }
 
-    private String splitTweet(String status) {
+    private String[] splitTweet(String status) {
+        String[] tweets = {};
         if(status.length() < 140) {
-            return status;
+            tweets[0] = status;
+            return tweets;
         } else {
             HashMap<Integer, Character> periodMap = new HashMap<>();
             for (int x = 140; x != 0; x--) {
@@ -173,7 +175,21 @@ public class WeatherTweets implements Runnable {
                     maxPeriod = entry;
                 }
             }
+            if(maxPeriod == null || maxPeriod.getKey() == null || maxPeriod.getValue() == null) {
+                tweets[20] = "Error 20: the key or value is null.";
+            }
+            String tweetOne = "";
+            for(int x = 0; x < maxPeriod.getKey(); x++) {
+                tweetOne = tweetOne + status.charAt(x);
+            }
+            tweets[1] = tweetOne;
+            String tweetTwo = "";
+            for(int x = tweetOne.length(); x < status.length(); x++) {
+                tweetTwo = tweetTwo + status.charAt(x);
+            }
+            tweets[2] = tweetTwo;
         }
-        return "Invalid tweet.";
+        tweets[10] = "Error 10: Invalid tweet.";
+        return tweets;
     }
 }
