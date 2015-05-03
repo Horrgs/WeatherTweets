@@ -9,7 +9,6 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,7 +31,7 @@ public class WeatherTweets implements Runnable {
         }
         System.out.println("Creating thread constructor.");
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), 0, 1, TimeUnit.MINUTES);
+        scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), 0, 5, TimeUnit.MINUTES);
     }
 
     @Override
