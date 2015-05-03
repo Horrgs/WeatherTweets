@@ -209,12 +209,12 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
 
     @Override
     public String getAccuConditions() {
-        return get(keyForecast, "conditions", null);
+        return get(keyForecast, "conditions", keyForecast);
     }
 
     @Override
     public int getAccuPrecipPossibility() {
-        return get(keyForecast, "pop", null);
+        return get(keyForecast, "pop", keyForecast);
     }
 
     @Override
