@@ -9,6 +9,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -101,7 +102,7 @@ public class WeatherTweets implements Runnable {
 
                     }
                     break;
-                case 40:
+                case 30:
                     if (message) {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
@@ -110,23 +111,26 @@ public class WeatherTweets implements Runnable {
                         System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
                             wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
-                            twitter.updateStatus(format +
+                            twitter.updateStatus("[1/2] " + format +
                                     "For: " + wgLookup.getDay() + "\n" +
-                                    "Outlook: " + wgLookup.getPrediction() + "\n" +
+                                    "Outlook: " + wgLookup.getPrediction() + "\n");
+                            twitter.updateStatus("[2/2] " + format +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
                             wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
                             System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
-                            twitter.updateStatus(format +
+                            twitter.updateStatus("[1/3]" + format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
-                                    "Outlook: " + wgLookup.getAccuConditions() + "\n" +
+                                    "Outlook: " + wgLookup.getAccuConditions() + "\n");
+                            twitter.updateStatus("[2/3] " + format +
                                     "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
-                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
+                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n");
+                            twitter.updateStatus("[3/3] " + format +
                                     "Humidity: " + wgLookup.getAvgHumidity() + "%");
                         }
                     }
                     break;
-                case 45:
+                case 40:
                     if (!message) {
                         protocol = WGLookup.Protocol.FORECAST;
                         wgLookup.setProtocol(protocol);
@@ -134,19 +138,22 @@ public class WeatherTweets implements Runnable {
                         System.out.println(debugDate + "Protocol updated to " + protocol.getProtocolType());
                         System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
-                            System.out.println(debugDate + "Non-simplistic tweet being sent for " + protocol.getProtocolType());
                             wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
-                            twitter.updateStatus(format +
-                                    "Outlook: " + wgLookup.getPrediction() + "\n" +
+                            twitter.updateStatus("[1/2] " + format +
+                                    "For: " + wgLookup.getDay() + "\n" +
+                                    "Outlook: " + wgLookup.getPrediction() + "\n");
+                            twitter.updateStatus("[2/2] " + format +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
                         } else {
-                            System.out.println(debugDate + "Simplistic tweet being sent for " + protocol.getProtocolType());
                             wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
-                            twitter.updateStatus(format +
+                            System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
+                            twitter.updateStatus("[1/3]" + format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
-                                    "Outlook: " + wgLookup.getAccuConditions() + "\n" +
+                                    "Outlook: " + wgLookup.getAccuConditions() + "\n");
+                            twitter.updateStatus("[2/3] " + format +
                                     "Chance of Precipitation: " + wgLookup.getAccuPrecipPossibility() + "%\n" +
-                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n" +
+                                    "Wind: " + wgLookup.getMaxWind() + "MPH max / " + wgLookup.getAvgWind() + "MPH avg\n");
+                            twitter.updateStatus("[3/3] " + format +
                                     "Humidity: " + wgLookup.getAvgHumidity() + "%");
                         }
                     }
@@ -157,15 +164,15 @@ public class WeatherTweets implements Runnable {
         }
     }
 
-    private String[] splitTweet(String status) {
-        String[] tweets = {};
+    public String[] splitTweet(String status) {
+        String[] tweets = new String[15];
         if(status.length() < 140) {
             tweets[0] = status;
             return tweets;
         } else {
             HashMap<Integer, Character> periodMap = new HashMap<>();
             for (int x = 140; x != 0; x--) {
-                if (status.charAt(x) == '.') {
+                if (status.charAt(x) == '.' || status.charAt(x) == '?' || status.charAt(x) == ',') {
                     periodMap.put(x, status.charAt(x));
                 }
             }
@@ -180,16 +187,15 @@ public class WeatherTweets implements Runnable {
             }
             String tweetOne = "";
             for(int x = 0; x < maxPeriod.getKey(); x++) {
-                tweetOne = tweetOne + status.charAt(x);
+                tweetOne = tweetOne + status.charAt(x + 1);
             }
             tweets[1] = tweetOne;
             String tweetTwo = "";
-            for(int x = tweetOne.length(); x < status.length(); x++) {
+            for(int x = tweetOne.length() + 1; x < status.length(); x++) {
                 tweetTwo = tweetTwo + status.charAt(x);
             }
             tweets[2] = tweetTwo;
+            return tweets;
         }
-        tweets[10] = "Error 10: Invalid tweet.";
-        return tweets;
     }
 }
