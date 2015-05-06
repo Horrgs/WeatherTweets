@@ -94,11 +94,13 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
                 return (T) jsonObject.getJSONArray(jsonObjectKey).getJSONObject(0).get(value);
             } else if(getProtocol() == Protocol.FORECAST) {
                 if(getForecastType() == ForecastType.TXTFORECAST) {
-                    System.out.println(jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(getPeriod()).get(value));
                     return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(getPeriod()).get(value);
                 } else if(getForecastType() == ForecastType.SIMPLEFORECAST) {
-                    System.out.println(jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj).get(value));
-                    return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj).get(value);
+                    if(forecastObj == null) {
+                        return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).get(value);
+                    } else {
+                        return (T) jsonObject.getJSONObject("forecast").getJSONObject(getForecastType().getForecastType()).getJSONArray("forecastday").getJSONObject(0).getJSONObject(forecastObj).get(value);
+                    }
                 }
             }
         } catch (JSONException ex) {
@@ -209,12 +211,12 @@ public class WGLookup implements WGConditions, WGAlert, WGForecast {
 
     @Override
     public String getAccuConditions() {
-        return get(keyForecast, "conditions", keyForecast);
+        return get(keyForecast, "conditions", null);
     }
 
     @Override
     public int getAccuPrecipPossibility() {
-        return get(keyForecast, "pop", keyForecast);
+        return get(keyForecast, "pop", null);
     }
 
     @Override
