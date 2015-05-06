@@ -1,5 +1,6 @@
 package org.horrgs.weathertweets;
 
+import com.sun.org.apache.bcel.internal.generic.CALOAD;
 import org.horrgs.weathertweets.wunderground.WGLookup;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -19,6 +20,7 @@ import java.util.Map.Entry;
  * Created by Horrgs on 3/9/2015.
  */
 public class WeatherTweets implements Runnable {
+    //TODO: make the message (e.g. outlook, chance of precip) carry over to the next tweet.
 
     public static void main(String[] args) throws IOException {
         File f = new File("keys.txt");
@@ -30,6 +32,20 @@ public class WeatherTweets implements Runnable {
             }
         }
         System.out.println("Creating thread constructor.");
+        Calendar cal = Calendar.getInstance();
+        int min = cal.get(Calendar.MINUTE);
+        int toGoBy = 10000;
+        if(min >= 10) {
+            toGoBy = String.valueOf(cal.get(Calendar.MINUTE)).indexOf(0);
+        } else {
+            if(min != 0) {
+                toGoBy = String.valueOf(cal.get(Calendar.MINUTE)).indexOf(0);
+            }
+        }
+        if(toGoBy > 5) {
+            toGoBy = toGoBy - 5;
+        }
+        System.out.println("Starting in " + toGoBy + " min(s)....");
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), 0, 5, TimeUnit.MINUTES);
     }
@@ -110,11 +126,17 @@ public class WeatherTweets implements Runnable {
                         System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                         if (wgLookup.shouldTweetSimplistic()) {
                             wgLookup.setForecastType(WGLookup.ForecastType.TXTFORECAST);
+                            //String[] tweets = splitTweet("For: " + wgLookup.getDay() + "\n" + "Outlook: " + wgLookup.getPrediction() + "\n" + "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
+                            //186 chars.
                             twitter.updateStatus("[1/2] " + format +
                                     "For: " + wgLookup.getDay() + "\n" +
                                     "Outlook: " + wgLookup.getPrediction() + "\n");
                             twitter.updateStatus("[2/2] " + format +
                                     "Chance of Precipitation: " + wgLookup.getPrecipitationPossibility() + "%");
+                         /*   if(!tweets[1].equals("STATUS IS LESS THAN 134 CHARACTERS")) {
+                                twitter.updateStatus("");
+                            } */
+
                         } else {
                             wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
                             System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
@@ -162,7 +184,7 @@ public class WeatherTweets implements Runnable {
             ex.printStackTrace();
         }
     }
-
+    //TODO: the issue is that the max period only goes up to 140.
     public String[] splitTweet(String status) {
         String[] tweets = new String[15];
         if(status.length() < 140) {
@@ -182,7 +204,7 @@ public class WeatherTweets implements Runnable {
                 }
             }
             if(maxPeriod == null || maxPeriod.getKey() == null || maxPeriod.getValue() == null) {
-                tweets[20] = "Error 20: the key or value is null.";
+                tweets[10] = "Error 20: the key or value is null.";
             }
             String tweetOne = "";
             for(int x = 0; x < maxPeriod.getKey(); x++) {
@@ -197,4 +219,58 @@ public class WeatherTweets implements Runnable {
             return tweets;
         }
     }
+  /*  public String[] splitTweet(String status) {
+        String[] tweets = new String[15];
+        if(status.length() < 140) {
+            tweets[0] = status;
+            return tweets;
+        } else {
+            HashMap<Integer, Character> periodMap = new HashMap<>();
+            for (int x = 140; x != 0; x--) {
+                if (status.charAt(x) == '.' || status.charAt(x) == '?' || status.charAt(x) == ',') {
+                    periodMap.put(x, status.charAt(x));
+                }
+            }
+            Entry<Integer, Character> maxPeriod = null;
+            for(Entry<Integer, Character> entry : periodMap.entrySet()) {
+                if(maxPeriod == null || entry.getValue() > maxPeriod.getValue()) {
+                    maxPeriod = entry;
+                }
+            }
+            if(maxPeriod == null || maxPeriod.getKey() == null || maxPeriod.getValue() == null) {
+                tweets[10] = "Error 20: the key or value is null.";
+            }
+            String tweetOne = "";
+            for(int x = 0; x < maxPeriod.getKey(); x++) {
+                tweetOne = tweetOne + status.charAt(x);
+            }
+            tweets[1] = tweetOne;
+            String tweetTwo = "";
+            for(int x = tweetOne.length() + 1; x < status.length(); x++) {
+                tweetTwo = tweetTwo + status.charAt(x);
+            }
+            tweets[2] = tweetTwo;
+            return tweets;
+        }
+    }
+
+    public int getMaxPoint(String string, int multiply) {
+        HashMap<Integer, Character> periodMap = new HashMap<>();
+        for (int x = 140 * multiply; x != x / multiply; x--) {
+            System.out.println(x);
+            if (string.charAt(x) == '.') {
+                periodMap.put(x, string.charAt(x));
+            }
+        }
+        Entry<Integer, Character> maxPeriod = null;
+        for (Entry<Integer, Character> entry : periodMap.entrySet()) {
+            if (maxPeriod == null || entry.getValue() > maxPeriod.getValue()) {
+                maxPeriod = entry;
+            }
+        }
+        if (maxPeriod == null || maxPeriod.getKey() == null || maxPeriod.getValue() == null) {
+            return 1000;
+        }
+        return maxPeriod.getKey();
+    }                  */
 }
