@@ -1,6 +1,5 @@
 package org.horrgs.weathertweets;
 
-import com.sun.org.apache.bcel.internal.generic.CALOAD;
 import org.horrgs.weathertweets.wunderground.WGLookup;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,8 +19,9 @@ import java.util.Map.Entry;
  * Created by Horrgs on 3/9/2015.
  */
 public class WeatherTweets implements Runnable {
-    //TODO: make the message (e.g. outlook, chance of precip) carry over to the next tweet.
-
+    //TODO: decrease API calls
+    //TODO: make it able to start at any time by using setDelay with %.
+    //TODO: allow to set the delay when started
     public static void main(String[] args) throws IOException {
         File f = new File("keys.txt");
         if (!f.exists()) {
@@ -32,22 +32,22 @@ public class WeatherTweets implements Runnable {
             }
         }
         System.out.println("Creating thread constructor.");
-        Calendar cal = Calendar.getInstance();
-        int min = cal.get(Calendar.MINUTE);
-        int toGoBy = 10000;
-        if(min >= 10) {
-            toGoBy = String.valueOf(cal.get(Calendar.MINUTE)).indexOf(0);
-        } else {
-            if(min != 0) {
-                toGoBy = String.valueOf(cal.get(Calendar.MINUTE)).indexOf(0);
-            }
-        }
-        if(toGoBy > 5) {
-            toGoBy = toGoBy - 5;
-        }
-        System.out.println("Starting in " + toGoBy + " min(s)....");
+        int minute = Calendar.getInstance().get(Calendar.MINUTE);
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
-        scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), 0, 5, TimeUnit.MINUTES);
+        if(args.length == 1) {
+            System.out.println("Starting in " + args[0] + " min(s)....");
+            scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), Integer.parseInt(args[0]), 10, TimeUnit.MINUTES);
+        } else {
+            System.out.println("Starting in " + getDelay(minute) + " min(s)....");
+            scheduledExecutorService.scheduleAtFixedRate(new WeatherTweets(), getDelay(minute), 10, TimeUnit.MINUTES);
+        }
+
+    }
+
+    public static int getDelay(int minute) {
+        int remainder = minute % 10;
+        int a = 60 - remainder;
+        return  a % 10;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class WeatherTweets implements Runnable {
         int min = calendar.get(Calendar.MINUTE);
         String debugDate = "[" + calendar.get(Calendar.MONTH  + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + year  + "]" +
                 " at " + hour + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + " ";
-        boolean message = new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage().equals("Zero weather alerts.");
+        boolean message = true;
         System.out.println(debugDate + "Is the message \"Zero weather alerts.?\" " + message);
         System.out.println(debugDate + "The mesage is: " + new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage());
         WGLookup.Protocol protocol = WGLookup.Protocol.CONDITION;
@@ -103,6 +103,7 @@ public class WeatherTweets implements Runnable {
                             "Wind Gusts: " + wgLookup.getWindGusts() + "MPH");
                     break;
                 case 20:
+                    message = new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage().equals("Zero weather alerts.");
                     if (!message) {
                         protocol = WGLookup.Protocol.ALERT;
                         wgLookup.setProtocol(protocol);
