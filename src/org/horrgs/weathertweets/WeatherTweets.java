@@ -60,7 +60,7 @@ public class WeatherTweets implements Runnable {
         int min = calendar.get(Calendar.MINUTE);
         String debugDate = "[" + calendar.get(Calendar.MONTH  + 1) + "/" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + year  + "]" +
                 " at " + hour + ":" + calendar.get(Calendar.MINUTE) + ":" + calendar.get(Calendar.SECOND) + " ";
-        boolean message = true;
+        boolean message = new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage().equals("Zero weather alerts.");;
         System.out.println(debugDate + "Is the message \"Zero weather alerts.?\" " + message);
         System.out.println(debugDate + "The mesage is: " + new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage());
         WGLookup.Protocol protocol = WGLookup.Protocol.CONDITION;
@@ -103,7 +103,6 @@ public class WeatherTweets implements Runnable {
                             "Wind Gusts: " + wgLookup.getWindGusts() + "MPH");
                     break;
                 case 20:
-                    message = new WGLookup(WGLookup.Protocol.ALERT, "NY", "Buffalo").getMessage().equals("Zero weather alerts.");
                     if (!message) {
                         protocol = WGLookup.Protocol.ALERT;
                         wgLookup.setProtocol(protocol);
@@ -140,7 +139,6 @@ public class WeatherTweets implements Runnable {
 
                         } else {
                             wgLookup.setForecastType(WGLookup.ForecastType.SIMPLEFORECAST);
-                            System.out.println(debugDate + "A weather " + protocol.getProtocolType() + " tweet is being sent.");
                             twitter.updateStatus("[1/3]" + format +
                                     "Temp: " + wgLookup.getAccuHighFahrenheit() + "F/" + wgLookup.getAccuLowFahrenheit() + "F\n" +
                                     "Outlook: " + wgLookup.getAccuConditions() + "\n");
