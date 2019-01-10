@@ -1,5 +1,5 @@
 # WeatherTweets
-Tweet's the weather of Buffalo
+Tweet's the weather of Buffalo, NY. @BfloNYWeather
 
 
 ## What does it tweet?
